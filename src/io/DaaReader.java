@@ -40,7 +40,7 @@ public class DaaReader {
     private ConcurrentHashMap<String, ArrayList<DaaHit>> readId2Hits;
 
     private AtomicLong allParsedRecords;
-    ;
+
     private int last_p;
     private long numOfRecords;
 
