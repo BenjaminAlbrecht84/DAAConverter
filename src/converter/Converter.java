@@ -38,7 +38,6 @@ public class Converter {
             String seq2 = hit.getAlignment()[1];
 
 
-
             String qseqid = hit.getQueryName(); // qseqid
             int qlen = hit.getTotalQueryLength(); // qlen
 
@@ -73,7 +72,7 @@ public class Converter {
             int mismatch = 0; // mismatch
 
             for (int i = 0; i < length; i++) {
-                if(seq1.charAt(i) != '-' && seq1.charAt(i) != '/' && seq1.charAt(i) != '\\' && seq2.charAt(i) != '-' && seq2.charAt(i) != '/' && seq2.charAt(i) != '\\') {
+                if (seq1.charAt(i) != '-' && seq1.charAt(i) != '/' && seq1.charAt(i) != '\\' && seq2.charAt(i) != '-' && seq2.charAt(i) != '/' && seq2.charAt(i) != '\\') {
                     if (seq1.charAt(i) == seq2.charAt(i)) {
                         nident++;
                     } else {
@@ -93,7 +92,7 @@ public class Converter {
 
             boolean insideGap = false;
 
-            for(int i = 0; i < length; i++) {
+            for (int i = 0; i < length; i++) {
                 if (seq1.charAt(i) == '-' && !insideGap) {
                     insideGap = true;
                     gapopen++;
@@ -106,7 +105,7 @@ public class Converter {
 
             insideGap = false;
 
-            for(int i = 0; i < length; i++) {
+            for (int i = 0; i < length; i++) {
                 if (seq2.charAt(i) == '-' && !insideGap) {
                     insideGap = true;
                     gapopen++;
@@ -148,6 +147,9 @@ public class Converter {
 
     private static ArrayList<DaaHit> parseDaaFile(File daaFile, int cores) {
         daaReader = new DaaReader(daaFile, 0L, false);
+
+        daaReader.getHeader().print();
+
         return daaReader.parseAllHits(cores);
     }
 
@@ -160,7 +162,7 @@ public class Converter {
 
     private static double computePercentIdentity(int numMatches, int length) {
 
-        return (( numMatches * 100) / (double) length);
+        return ((numMatches * 100) / (double) length);
     }
 
     private static double computeEValue(DaaHit daaHit) {
