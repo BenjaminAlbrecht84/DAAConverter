@@ -280,6 +280,10 @@ public class DaaHeader {
         return gapExtend;
     }
 
+    public String getScoreMatrixName() {
+        return scoreMatrixName;
+    }
+
     public void print() {
 
         System.out.println("DIAMOND HEADER *********************\n");

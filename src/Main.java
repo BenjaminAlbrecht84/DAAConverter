@@ -1,6 +1,7 @@
 import converter.Converter;
 
 import java.io.File;
+import java.io.IOException;
 
 public class Main {
 
@@ -9,7 +10,11 @@ public class Main {
         int cores = Integer.parseInt(args[1]);
 
 //        Converter.toBlastPairwiseFormat(daaFile, cores);
-        Converter.toBlastTabFormat(daaFile, cores);
+        try {
+            Converter.toBlastTabFormat(daaFile, cores, "res/test.tab", true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }
