@@ -37,20 +37,39 @@ public class Converter {
         String matrix = daaReader.getHeader().getScoreMatrixName();
 
         if (matrix != null) {
-            if (matrix.startsWith("blosum62") || matrix.startsWith("Blosum62") || matrix.startsWith("BLOSUM62")) {
+            if (matrix.startsWith("blosum45") || matrix.startsWith("Blosum45") || matrix.startsWith("BLOSUM45")) {
+                BlastStatisticsHelper.init("BLOSUM45", daaReader.getHeader().getGapOpen(),
+                        daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+            } if (matrix.startsWith("blosum50") || matrix.startsWith("Blosum50") || matrix.startsWith("BLOSUM50")) {
+                BlastStatisticsHelper.init("BLOSUM50", daaReader.getHeader().getGapOpen(),
+                        daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+            } else if (matrix.startsWith("blosum62") || matrix.startsWith("Blosum62") || matrix.startsWith("BLOSUM62")) {
                 BlastStatisticsHelper.init("BLOSUM62", daaReader.getHeader().getGapOpen(),
+                        daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+            } else if (matrix.startsWith("blosum80") || matrix.startsWith("Blosum80") || matrix.startsWith("BLOSUM80")) {
+                BlastStatisticsHelper.init("BLOSUM80", daaReader.getHeader().getGapOpen(),
+                        daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+            } else if (matrix.startsWith("blosum90") || matrix.startsWith("Blosum90") || matrix.startsWith("BLOSUM90")) {
+                BlastStatisticsHelper.init("BLOSUM90", daaReader.getHeader().getGapOpen(),
+                        daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+            } else if (matrix.startsWith("pam30") || matrix.startsWith("Pam30") || matrix.startsWith("PAM30")) {
+                BlastStatisticsHelper.init("PAM30", daaReader.getHeader().getGapOpen(),
+                        daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+            } else if (matrix.startsWith("pam70") || matrix.startsWith("Pam70") || matrix.startsWith("PAM70")) {
+                BlastStatisticsHelper.init("PAM70", daaReader.getHeader().getGapOpen(),
+                        daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+            } else if (matrix.startsWith("pam250") || matrix.startsWith("Pam250") || matrix.startsWith("PAM250")) {
+                BlastStatisticsHelper.init("PAM250", daaReader.getHeader().getGapOpen(),
                         daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
             } else {
                 System.err.println("Warning: ScoringMatrix could not be identified! \n" +
-                        "For the calculation of the Bitscore and E-Value the BLOSUM62 matrix will be used.");
-                BlastStatisticsHelper.init("BLOSUM62", daaReader.getHeader().getGapOpen(),
-                        daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+                        "For the calculation of the Bitscore and E-Value the BLOSUM62 matrix will be used with the default values for GapOpen (11) and GapExtend (1).");
+                BlastStatisticsHelper.init("BLOSUM62", 11,1, daaReader.getHeader().getDbLetters().longValue());
             }
         } else {
             System.err.println("Warning: ScoringMatrix could not be identified! \n" +
-                    "For the calculation of the Bitscore and E-Value the BLOSUM62 matrix will be used.");
-            BlastStatisticsHelper.init("BLOSUM62", daaReader.getHeader().getGapOpen(),
-                    daaReader.getHeader().getGapExtend(), daaReader.getHeader().getDbLetters().longValue());
+                    "For the calculation of the Bitscore and E-Value the BLOSUM62 matrix will be used with the default values for GapOpen (11) and GapExtend (1).");
+            BlastStatisticsHelper.init("BLOSUM62", 11,1, daaReader.getHeader().getDbLetters().longValue());
         }
 
         String header = "qseqid" + "\t" + "qlen" + "\t" + "sseqid" + "\t" + "slen" + "\t"
