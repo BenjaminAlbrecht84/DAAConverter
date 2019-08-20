@@ -12,6 +12,7 @@ public class Main {
 //        Converter.toBlastPairwiseFormat(daaFile, cores);
         try {
             Converter.toBlastTabFormat(daaFile, cores, "res/test.tab", true);
+            Converter.toBlastXMLFormat(daaFile, cores, "res/test.xml");
         } catch (IOException e) {
             e.printStackTrace();
         }
