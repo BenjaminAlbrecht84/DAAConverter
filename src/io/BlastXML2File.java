@@ -1,33 +1,31 @@
 package io;
 
-import java.io.File;
-import java.util.ArrayList;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 import utils.BlastStatisticsHelper;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.*;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.util.ArrayList;
 
-public class BlastXMLFile {
+public class BlastXML2File {
 
     private DocumentBuilderFactory documentBuilderFactory;
     private DocumentBuilder documentBuilder;
     private Document document;
     private TransformerFactory transformerFactory;
     private Transformer transformer;
-    private Element blastOutput;
-    private Element blastOutputIterations;
-    private Element blastOutputParam;
+    private Element blastXML2;
 
 
-    public BlastXMLFile() {
+    public BlastXML2File() {
         try {
             documentBuilderFactory = DocumentBuilderFactory.newInstance();
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -42,11 +40,9 @@ public class BlastXMLFile {
             transformer.setOutputProperty(OutputKeys.METHOD, "xml");
             transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
 
-            blastOutput = document.createElement("BlastOutput");
-            blastOutput.setAttributeNS("http://www.ncbi.nlm.nih.gov",
-                    "xs:schemaLocation", "http://www.ncbi.nlm.nih.gov http://www.ncbi.nlm.nih.gov/data_specs/schema_alt/NCBI_BlastOutput.xsd");
-            blastOutputParam = document.createElement("BlastOutput_param");
-            blastOutputIterations = document.createElement("BlastOutput_iterations");
+            blastXML2 = document.createElement("BlastXML2");
+            blastXML2.setAttributeNS("http://www.ncbi.nlm.nih.gov",
+                    "xs:schemaLocation", "http://www.ncbi.nlm.nih.gov http://www.ncbi.nlm.nih.gov/data_specs/schema_alt/NCBI_BlastOutput2.xsd");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -54,73 +50,15 @@ public class BlastXMLFile {
 
     public void initializeFile(String program, String version, String reference, String database, String queryId,
                                String queryDef, String queryLen) {
-        Element blastOutputProgram = document.createElement("BlastOutput_program");
-        blastOutputProgram.setTextContent(program);
-        Element blastOutputVersion = document.createElement("BlastOutput_version");
-        blastOutputVersion.setTextContent(version);
-        Element blastOutputReference = document.createElement("BlastOutput_reference");
-        blastOutputReference.setTextContent(reference);
-        Element blastOutputDb = document.createElement("BlastOutput_db");
-        blastOutputDb.setTextContent(database);
-        Element blastOutputQueryId = document.createElement("BlastOutput_query-ID");
-        blastOutputQueryId.setTextContent(queryId);
-        Element blastOutputQueryDef = document.createElement("BlastOutput_query-def");
-        blastOutputQueryDef.setTextContent(queryDef);
-        Element blastOutputQueryLen = document.createElement("BlastOutput_query-len");
-        blastOutputQueryLen.setTextContent(queryLen);
 
-        blastOutput.appendChild(blastOutputProgram);
-        blastOutput.appendChild(blastOutputVersion);
-        blastOutput.appendChild(blastOutputReference);
-        blastOutput.appendChild(blastOutputDb);
-        blastOutput.appendChild(blastOutputQueryId);
-        blastOutput.appendChild(blastOutputQueryDef);
-        blastOutput.appendChild(blastOutputQueryLen);
-
-        blastOutput.appendChild(blastOutputParam);
-        blastOutput.appendChild(blastOutputIterations);
-
-        document.appendChild(blastOutput);
     }
 
     public void addUsedProgramParameters(String matrix, String expect, String gapOpen, String gapExtend, String filter) {
-        Element parameters = document.createElement("Parameters");
 
-        Element parametersMatrix = document.createElement("Parameters_matrix");
-        Element parametersExpect = document.createElement("Parameters_expect");
-        Element parametersGapOpen = document.createElement("Parameters_gap-open");
-        Element parametersGapExtend = document.createElement("Parameters_gap-extend");
-        Element parametersFilter = document.createElement("Parameters_filter");
-
-        parametersMatrix.setTextContent(matrix);
-        parametersExpect.setTextContent(expect);
-        parametersGapOpen.setTextContent(gapOpen);
-        parametersGapExtend.setTextContent(gapExtend);
-        parametersFilter.setTextContent(filter);
-
-        parameters.appendChild(parametersMatrix);
-        parameters.appendChild(parametersExpect);
-        parameters.appendChild(parametersGapOpen);
-        parameters.appendChild(parametersGapExtend);
-        parameters.appendChild(parametersFilter);
-
-        blastOutputParam.appendChild(parameters);
     }
 
     public void addHitIteration(int iterNum, ArrayList<DaaHit> daaHits) {
-        Element iteration = document.createElement("Iteration");
-
-        Element iterationIterNum = document.createElement("Iteration_iter-num");
-        Element iterationQueryId = document.createElement("Iteration_query-ID");
-        Element iterationQueryDef = document.createElement("Iteration_query-def");
-        Element iterationQueryLen = document.createElement("Iteration_query-len");
-
-        iterationIterNum.setTextContent(String.valueOf(iterNum));
-        iterationQueryId.setTextContent("Query_" + iterNum);
-        iterationQueryDef.setTextContent(daaHits.get(0).getQueryName());
-        iterationQueryLen.setTextContent(String.valueOf(daaHits.get(0).getTotalQueryLength()));
-        
-        Element iterationHits = document.createElement("Iteration_hits");
+        Element searchHits = document.createElement("Search_hits");
 
         int hitIter = 1;
         for (DaaHit daaHit : daaHits) {
@@ -254,12 +192,12 @@ public class BlastXMLFile {
             hit.appendChild(hitLen);
             hit.appendChild(hitHsps);
 
-            iterationHits.appendChild(hit);
+            searchHits.appendChild(hit);
 
             hitIter++;
         }
 
-        Element iterationStat = document.createElement("Iteration_stat");
+        Element searchStat = document.createElement("Search_stat");
 
         Element statistics = document.createElement("Statistics");
 
@@ -287,16 +225,7 @@ public class BlastXMLFile {
         statistics.appendChild(statisticsLambda);
         statistics.appendChild(statisticsEntropy);
 
-        iterationStat.appendChild(statistics);
-
-        iteration.appendChild(iterationIterNum);
-        iteration.appendChild(iterationQueryId);
-        iteration.appendChild(iterationQueryDef);
-        iteration.appendChild(iterationQueryLen);
-        iteration.appendChild(iterationHits);
-        iteration.appendChild(iterationStat);
-
-        blastOutputIterations.appendChild(iteration);
+        searchStat.appendChild(statistics);
     }
 
     public void writeXML(String filepath) throws TransformerException {

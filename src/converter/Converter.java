@@ -42,8 +42,8 @@ public class Converter {
                 "TEST");
 
         int iteration = 1;
-        for (DaaHit hit : allHits) {
-            blastXMLFile.addHitIteration(iteration, hit, daaReader);
+        for (String queryId : daaReader.getReadId2Hits().keySet()) {
+            blastXMLFile.addHitIteration(iteration, daaReader.getReadId2Hits().get(queryId));
             iteration++;
         }
 

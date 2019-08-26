@@ -204,4 +204,8 @@ public class DaaReader {
     public DaaHeader getHeader() {
         return header;
     }
+
+    public ConcurrentHashMap<String, ArrayList<DaaHit>> getReadId2Hits() {
+        return readId2Hits;
+    }
 }
