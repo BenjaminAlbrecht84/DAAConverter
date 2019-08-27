@@ -1,5 +1,6 @@
 package io;
 
+import com.sun.corba.se.spi.monitoring.StringMonitoredAttributeBase;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import utils.BlastStatisticsHelper;
@@ -43,21 +44,112 @@ public class BlastXML2File {
             blastXML2 = document.createElement("BlastXML2");
             blastXML2.setAttributeNS("http://www.ncbi.nlm.nih.gov",
                     "xs:schemaLocation", "http://www.ncbi.nlm.nih.gov http://www.ncbi.nlm.nih.gov/data_specs/schema_alt/NCBI_BlastOutput2.xsd");
+
+            document.appendChild(blastXML2);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public void initializeFile(String program, String version, String reference, String database, String queryId,
-                               String queryDef, String queryLen) {
+    public void addQueryEntry(ArrayList<DaaHit> daaHits, String program, String version, String reference,
+                              String targetDatabase, String matrix, String expect, String gapOpen, String gapExtend,
+                              String filter, String errorCode) {
+        Element blastOutput2 = document.createElement("BlastOutput2");
 
+        blastOutput2.appendChild(addBlastOutput2Report(daaHits, program, version, reference, targetDatabase, matrix,
+                expect, gapOpen, gapExtend, filter));
+        blastOutput2.appendChild(addBlastOutput2Error(errorCode));
+
+        blastXML2.appendChild(blastOutput2);
     }
 
-    public void addUsedProgramParameters(String matrix, String expect, String gapOpen, String gapExtend, String filter) {
+    private Element addBlastOutput2Report(ArrayList<DaaHit> daaHits, String program, String version, String reference,
+                                          String targetDatabase, String matrix, String expect, String gapOpen, String gapExtend,
+                                          String filter) {
+        Element blastOutput2_report = document.createElement("BlastOutput2_report");
+        Element report = document.createElement("Report");
 
+        Element reportProgram = document.createElement("Report_program");
+        Element reportVersion = document.createElement("Report_version");
+        Element reportReference = document.createElement("Report_reference");
+
+        reportProgram.setTextContent(program);
+        reportVersion.setTextContent(version);
+        reportReference.setTextContent(reference);
+
+        report.appendChild(reportProgram);
+        report.appendChild(reportVersion);
+        report.appendChild(reportReference);
+        report.appendChild(addReportSearchTarget(targetDatabase));
+        report.appendChild(addUsedProgramParameters(matrix, expect, gapOpen, gapExtend, filter));
+        report.appendChild(addSearchResults(daaHits));
+
+        blastOutput2_report.appendChild(report);
+
+        return blastOutput2_report;
     }
 
-    public void addHitIteration(int iterNum, ArrayList<DaaHit> daaHits) {
+    private Element addBlastOutput2Error(String errorCode) {
+        Element blastOutput2_error = document.createElement("BlastOutput2_error");
+        Element err = document.createElement("Err");
+        Element errCode = document.createElement("Err_code");
+
+        errCode.setTextContent(errorCode);
+
+        err.appendChild(errCode);
+        blastOutput2_error.appendChild(err);
+
+        return blastOutput2_error;
+    }
+
+    private Element addReportSearchTarget(String targetDatabase) {
+        Element reportSearchTarget = document.createElement("Report_search-target");
+        Element target = document.createElement("Target");
+        Element targetDB = document.createElement("Target_db");
+
+        targetDB.setTextContent(targetDatabase);
+        target.appendChild(targetDB);
+        reportSearchTarget.appendChild(target);
+
+        return reportSearchTarget;
+    }
+
+    private Element addUsedProgramParameters(String matrix, String expect, String gapOpen, String gapExtend, String filter) {
+        Element reportParams = document.createElement("Report_params");
+        Element parameters = document.createElement("Parameters");
+
+        Element parametersMatrix = document.createElement("Parameters_matrix");
+        Element parametersExpect = document.createElement("Parameters_expect");
+        Element parametersGapOpen = document.createElement("Parameters_gap-open");
+        Element parametersGapExtend = document.createElement("Parameters_gap-extend");
+        Element parametersFilter = document.createElement("Parameters_filter");
+
+        parametersMatrix.setTextContent(matrix);
+        parametersExpect.setTextContent(expect);
+        parametersGapOpen.setTextContent(gapOpen);
+        parametersGapExtend.setTextContent(gapExtend);
+        parametersFilter.setTextContent(filter);
+
+        parameters.appendChild(parametersMatrix);
+        parameters.appendChild(parametersExpect);
+        parameters.appendChild(parametersGapOpen);
+        parameters.appendChild(parametersGapExtend);
+        parameters.appendChild(parametersFilter);
+
+        reportParams.appendChild(parameters);
+
+        return reportParams;
+    }
+
+    private Element addSearchResults(ArrayList<DaaHit> daaHits) {
+        Element reportResults = document.createElement("Report_results");
+        Element results = document.createElement("Results");
+        Element resultsSearch = document.createElement("Results_search");
+        Element search = document.createElement("Search");
+        Element searchQueryID = document.createElement("Search_query-id");
+        Element searchQueryTitle = document.createElement("Search_query-title");
+        Element searchQueryLen = document.createElement("Search_query-len");
+        Element searchQueryMasking = document.createElement("Search_query-masking");
         Element searchHits = document.createElement("Search_hits");
 
         int hitIter = 1;
@@ -197,6 +289,21 @@ public class BlastXML2File {
             hitIter++;
         }
 
+        search.appendChild(searchQueryID);
+        search.appendChild(searchQueryTitle);
+        search.appendChild(searchQueryLen);
+        search.appendChild(searchQueryMasking);
+        search.appendChild(searchHits);
+        search.appendChild(addSearchStats());
+
+        resultsSearch.appendChild(search);
+        results.appendChild(resultsSearch);
+        reportResults.appendChild(results);
+
+        return reportResults;
+    }
+
+    private Element addSearchStats() {
         Element searchStat = document.createElement("Search_stat");
 
         Element statistics = document.createElement("Statistics");
@@ -226,16 +333,14 @@ public class BlastXML2File {
         statistics.appendChild(statisticsEntropy);
 
         searchStat.appendChild(statistics);
+
+        return searchStat;
     }
 
     public void writeXML(String filepath) throws TransformerException {
         DOMSource domSource = new DOMSource(document);
         StreamResult streamResult = new StreamResult(new File(filepath));
-
-        // If you use
         // StreamResult result = new StreamResult(System.out);
-        // the output will be pushed to the standard output ...
-        // You can use that for debugging
 
         transformer.transform(domSource, streamResult);
     }

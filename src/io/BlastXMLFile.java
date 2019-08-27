@@ -47,6 +47,8 @@ public class BlastXMLFile {
                     "xs:schemaLocation", "http://www.ncbi.nlm.nih.gov http://www.ncbi.nlm.nih.gov/data_specs/schema_alt/NCBI_BlastOutput.xsd");
             blastOutputParam = document.createElement("BlastOutput_param");
             blastOutputIterations = document.createElement("BlastOutput_iterations");
+
+            document.appendChild(blastOutput);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -79,8 +81,6 @@ public class BlastXMLFile {
 
         blastOutput.appendChild(blastOutputParam);
         blastOutput.appendChild(blastOutputIterations);
-
-        document.appendChild(blastOutput);
     }
 
     public void addUsedProgramParameters(String matrix, String expect, String gapOpen, String gapExtend, String filter) {
@@ -302,11 +302,7 @@ public class BlastXMLFile {
     public void writeXML(String filepath) throws TransformerException {
         DOMSource domSource = new DOMSource(document);
         StreamResult streamResult = new StreamResult(new File(filepath));
-
-        // If you use
         // StreamResult result = new StreamResult(System.out);
-        // the output will be pushed to the standard output ...
-        // You can use that for debugging
 
         transformer.transform(domSource, streamResult);
     }

@@ -1,5 +1,6 @@
 package converter;
 
+import io.BlastXML2File;
 import io.BlastXMLFile;
 import io.DaaHit;
 import io.DaaReader;
@@ -35,11 +36,11 @@ public class Converter {
         initializeStatisticsHelper();
 
         BlastXMLFile blastXMLFile = new BlastXMLFile();
-        blastXMLFile.initializeFile("blastx", "TEST", "TEST", "TEST", "TEST",
-                "TEST", String.valueOf(allHits.get(0).getTotalQueryLength()));
-        blastXMLFile.addUsedProgramParameters(daaReader.getHeader().getScoreMatrixName(), "TEST",
+        blastXMLFile.initializeFile("blastx", "UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN",
+                "UNKNOWN", String.valueOf(allHits.get(0).getTotalQueryLength()));
+        blastXMLFile.addUsedProgramParameters(daaReader.getHeader().getScoreMatrixName(), "UNKNOWN",
                 String.valueOf(daaReader.getHeader().getGapOpen()), String.valueOf(daaReader.getHeader().getGapExtend()),
-                "TEST");
+                "UNKNOWN");
 
         int iteration = 1;
         for (String queryId : daaReader.getReadId2Hits().keySet()) {
@@ -49,6 +50,29 @@ public class Converter {
 
         try {
             blastXMLFile.writeXML(filepath);
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void toBlastXML2Format(File daaFile, int cores, String filepath) {
+        ArrayList<DaaHit> allHits = parseDaaFile(daaFile, cores);
+
+        initializeStatisticsHelper();
+
+        BlastXML2File blastXML2File = new BlastXML2File();
+
+        int iteration = 1;
+        for (String queryId : daaReader.getReadId2Hits().keySet()) {
+            blastXML2File.addQueryEntry(daaReader.getReadId2Hits().get(queryId), "blastx", "TEST",
+                    "UNKNOWN", "UNKNOWN", daaReader.getHeader().getScoreMatrixName(), "TEST",
+                    String.valueOf(daaReader.getHeader().getGapOpen()), String.valueOf(daaReader.getHeader().getGapExtend()),
+                    "UNKNOWN", "");
+            iteration++;
+        }
+
+        try {
+            blastXML2File.writeXML(filepath);
         } catch (TransformerException e) {
             e.printStackTrace();
         }
