@@ -1,6 +1,7 @@
 package io;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 import org.w3c.dom.Document;
@@ -107,7 +108,7 @@ public class BlastXMLFile {
         blastOutputParam.appendChild(parameters);
     }
 
-    public void addHitIteration(int iterNum, ArrayList<DaaHit> daaHits) {
+    public void addHitIteration(int iterNum, ArrayList<DaaHit> daaHits, BigInteger dbLetters, long dbSeqs) {
         Element iteration = document.createElement("Iteration");
 
         Element iterationIterNum = document.createElement("Iteration_iter-num");
@@ -223,8 +224,9 @@ public class BlastXMLFile {
 
             hspGaps.setTextContent(String.valueOf(gaps));
             hspAlignLen.setTextContent(String.valueOf(daaHit.getAlignment()[0].length()));
-            hspQseq.setTextContent("UNKNOWN");
-            hspHseq.setTextContent("UNKNOWN");
+
+            hspQseq.setTextContent(seq1);
+            hspHseq.setTextContent(seq2);
             hspMidline.setTextContent("UNKNOWN");
 
             hsp.appendChild(hspNum);
@@ -271,13 +273,13 @@ public class BlastXMLFile {
         Element statisticsLambda = document.createElement("Statistics_lambda");
         Element statisticsEntropy = document.createElement("Statistics_entropy");
 
-        statisticsDbNum.setTextContent("UNKNOWN");
-        statisticsDbLen.setTextContent("UNKNOWN");
-        statisticsHspLen.setTextContent("UNKNOWN");
-        statisticsEffSpace.setTextContent("UNKNOWN");
-        statisticsKappa.setTextContent("UNKNOWN");
-        statisticsLambda.setTextContent("UNKNOWN");
-        statisticsEntropy.setTextContent("UNKNOWN");
+        statisticsDbNum.setTextContent(String.valueOf(dbSeqs));
+        statisticsDbLen.setTextContent(String.valueOf(dbLetters));
+        statisticsHspLen.setTextContent(String.valueOf(0));
+        statisticsEffSpace.setTextContent(String.valueOf(0));
+        statisticsKappa.setTextContent(String.valueOf(BlastStatisticsHelper.K));
+        statisticsLambda.setTextContent(String.valueOf(BlastStatisticsHelper.LAMBDA));
+        statisticsEntropy.setTextContent(String.valueOf(0));
 
         statistics.appendChild(statisticsDbNum);
         statistics.appendChild(statisticsDbLen);

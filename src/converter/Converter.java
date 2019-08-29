@@ -36,15 +36,15 @@ public class Converter {
         initializeStatisticsHelper();
 
         BlastXMLFile blastXMLFile = new BlastXMLFile();
-        blastXMLFile.initializeFile("blastx", "UNKNOWN", "UNKNOWN", "UNKNOWN", "UNKNOWN",
-                "UNKNOWN", String.valueOf(allHits.get(0).getTotalQueryLength()));
+        blastXMLFile.initializeFile("blastx", "UNKNOWN", "UNKNOWN", "UNKNOWN", "Query_1",
+                allHits.get(0).getQueryName(), String.valueOf(allHits.get(0).getTotalQueryLength()));
         blastXMLFile.addUsedProgramParameters(daaReader.getHeader().getScoreMatrixName(), "UNKNOWN",
                 String.valueOf(daaReader.getHeader().getGapOpen()), String.valueOf(daaReader.getHeader().getGapExtend()),
                 "UNKNOWN");
 
         int iteration = 1;
         for (String queryId : daaReader.getReadId2Hits().keySet()) {
-            blastXMLFile.addHitIteration(iteration, daaReader.getReadId2Hits().get(queryId));
+            blastXMLFile.addHitIteration(iteration, daaReader.getReadId2Hits().get(queryId), daaReader.getHeader().getDbLetters(), daaReader.getHeader().getDbSeqs());
             iteration++;
         }
 
@@ -64,10 +64,10 @@ public class Converter {
 
         int iteration = 1;
         for (String queryId : daaReader.getReadId2Hits().keySet()) {
-            blastXML2File.addQueryEntry(daaReader.getReadId2Hits().get(queryId), "blastx", "TEST",
-                    "UNKNOWN", "UNKNOWN", daaReader.getHeader().getScoreMatrixName(), "TEST",
+            blastXML2File.addQueryEntry(daaReader.getReadId2Hits().get(queryId), "blastx", "UNKNOWN",
+                    "UNKNOWN", "UNKNOWN", daaReader.getHeader().getScoreMatrixName(), String.valueOf(0),
                     String.valueOf(daaReader.getHeader().getGapOpen()), String.valueOf(daaReader.getHeader().getGapExtend()),
-                    "UNKNOWN", "");
+                    "UNKNOWN", "", daaReader.getHeader().getDbLetters(), daaReader.getHeader().getDbSeqs());
             iteration++;
         }
 

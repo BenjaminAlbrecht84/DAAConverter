@@ -14,6 +14,7 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class BlastXML2File {
@@ -53,11 +54,11 @@ public class BlastXML2File {
 
     public void addQueryEntry(ArrayList<DaaHit> daaHits, String program, String version, String reference,
                               String targetDatabase, String matrix, String expect, String gapOpen, String gapExtend,
-                              String filter, String errorCode) {
+                              String filter, String errorCode, BigInteger dbLetters, long dbSeqs) {
         Element blastOutput2 = document.createElement("BlastOutput2");
 
         blastOutput2.appendChild(addBlastOutput2Report(daaHits, program, version, reference, targetDatabase, matrix,
-                expect, gapOpen, gapExtend, filter));
+                expect, gapOpen, gapExtend, filter, dbLetters, dbSeqs));
         blastOutput2.appendChild(addBlastOutput2Error(errorCode));
 
         blastXML2.appendChild(blastOutput2);
@@ -65,7 +66,7 @@ public class BlastXML2File {
 
     private Element addBlastOutput2Report(ArrayList<DaaHit> daaHits, String program, String version, String reference,
                                           String targetDatabase, String matrix, String expect, String gapOpen, String gapExtend,
-                                          String filter) {
+                                          String filter, BigInteger dbLetters, long dbSeqs) {
         Element blastOutput2_report = document.createElement("BlastOutput2_report");
         Element report = document.createElement("Report");
 
@@ -82,7 +83,7 @@ public class BlastXML2File {
         report.appendChild(reportReference);
         report.appendChild(addReportSearchTarget(targetDatabase));
         report.appendChild(addUsedProgramParameters(matrix, expect, gapOpen, gapExtend, filter));
-        report.appendChild(addSearchResults(daaHits));
+        report.appendChild(addSearchResults(daaHits, dbLetters, dbSeqs));
 
         blastOutput2_report.appendChild(report);
 
@@ -141,7 +142,7 @@ public class BlastXML2File {
         return reportParams;
     }
 
-    private Element addSearchResults(ArrayList<DaaHit> daaHits) {
+    private Element addSearchResults(ArrayList<DaaHit> daaHits, BigInteger dbLetters, long dbSeqs) {
         Element reportResults = document.createElement("Report_results");
         Element results = document.createElement("Results");
         Element resultsSearch = document.createElement("Results_search");
@@ -253,8 +254,8 @@ public class BlastXML2File {
 
             hspGaps.setTextContent(String.valueOf(gaps));
             hspAlignLen.setTextContent(String.valueOf(daaHit.getAlignment()[0].length()));
-            hspQseq.setTextContent("UNKNOWN");
-            hspHseq.setTextContent("UNKNOWN");
+            hspQseq.setTextContent(seq1);
+            hspHseq.setTextContent(seq2);
             hspMidline.setTextContent("UNKNOWN");
 
             hsp.appendChild(hspNum);
@@ -294,7 +295,7 @@ public class BlastXML2File {
         search.appendChild(searchQueryLen);
         search.appendChild(searchQueryMasking);
         search.appendChild(searchHits);
-        search.appendChild(addSearchStats());
+        search.appendChild(addSearchStats(dbLetters, dbSeqs));
 
         resultsSearch.appendChild(search);
         results.appendChild(resultsSearch);
@@ -303,7 +304,7 @@ public class BlastXML2File {
         return reportResults;
     }
 
-    private Element addSearchStats() {
+    private Element addSearchStats(BigInteger dbLetters, long dbSeqs) {
         Element searchStat = document.createElement("Search_stat");
 
         Element statistics = document.createElement("Statistics");
@@ -316,13 +317,13 @@ public class BlastXML2File {
         Element statisticsLambda = document.createElement("Statistics_lambda");
         Element statisticsEntropy = document.createElement("Statistics_entropy");
 
-        statisticsDbNum.setTextContent("UNKNOWN");
-        statisticsDbLen.setTextContent("UNKNOWN");
-        statisticsHspLen.setTextContent("UNKNOWN");
-        statisticsEffSpace.setTextContent("UNKNOWN");
-        statisticsKappa.setTextContent("UNKNOWN");
-        statisticsLambda.setTextContent("UNKNOWN");
-        statisticsEntropy.setTextContent("UNKNOWN");
+        statisticsDbNum.setTextContent(String.valueOf(dbSeqs));
+        statisticsDbLen.setTextContent(String.valueOf(dbLetters));
+        statisticsHspLen.setTextContent(String.valueOf(0));
+        statisticsEffSpace.setTextContent(String.valueOf(0));
+        statisticsKappa.setTextContent(String.valueOf(BlastStatisticsHelper.K));
+        statisticsLambda.setTextContent(String.valueOf(BlastStatisticsHelper.LAMBDA));
+        statisticsEntropy.setTextContent(String.valueOf(0));
 
         statistics.appendChild(statisticsDbNum);
         statistics.appendChild(statisticsDbLen);

@@ -24,9 +24,9 @@ public class Main {
         DaaReader daaReader = new DaaReader(daaFile, 0L, false);
 
         try {
-            Converter.toBlastTabFormat(daaFile, cores, "res/test6.tab", true);
-            Converter.toBlastXMLFormat(daaFile, cores, "res/test6.xml");
-            Converter.toBlastXML2Format(daaFile, cores, "res/test_new6.xml");
+            Converter.toBlastTabFormat(daaFile, cores, "res/test7.tab", true);
+            Converter.toBlastXMLFormat(daaFile, cores, "res/test7.xml");
+            Converter.toBlastXML2Format(daaFile, cores, "res/test_new7.xml");
         } catch (IOException e) {
             e.printStackTrace();
         }

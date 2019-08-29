@@ -268,6 +268,10 @@ public class DaaHeader {
         return headerSize;
     }
 
+    public long getDbSeqs() {
+        return dbSeqs;
+    }
+
     public long getDbSeqsUsed() {
         return dbSeqsUsed;
     }
